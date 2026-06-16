@@ -1,58 +1,81 @@
-# PPT Builder — Claude Code Skill
+# PPT Builder Skill
 
-从演讲稿/大纲到 PPTX 演示文稿的完整工作流 skill。适用于 [Claude Code](https://claude.ai/code)。
+An AI assistant workflow skill for turning scripts, outlines, training material, or product notes into editable PowerPoint-oriented presentations.
 
-## 能做什么
+The skill was originally written for Claude Code-style skill workflows, and its process can also be adapted for other coding agents that can follow a `SKILL.md` instruction file.
 
-- 输入演讲稿、培训文案、产品大纲 → 输出可直接使用的 .pptx 文件
-- 自动提炼大纲、设计分镜脚本、建立色彩系统、代码生成、视觉 QA
-- 支持浅色简洁风、暗黑科技风等多种设计风格
-- 内置图片比例保护机制，不会出现拉伸变形
+## What It Does
 
-## 安装
+- Turns a speech script, document, or outline into a slide-by-slide deck plan
+- Guides the user through outline, storyboard, design system, generation, visual QA, and delivery
+- Uses `pptxgenjs`-oriented generation patterns for editable `.pptx` output
+- Includes guardrails for image sizing and visual QA so generated decks avoid obvious layout mistakes
 
-**方式一：直接复制**
+## Workflow
+
+The skill follows a six-step process:
+
+1. Extract an outline from the source material
+2. Confirm a page-by-page storyboard
+3. Define the visual style and design system
+4. Generate the PPTX build script
+5. Render slides for visual QA
+6. Fix layout issues and deliver the final deck
+
+This confirmation-heavy flow is intentional. Presentation work has many subjective design decisions, and confirming the outline and storyboard early prevents full-deck rewrites later.
+
+## Install
+
+For Claude Code-style skill usage, copy the skill file into your skills directory:
+
 ```bash
-# Claude Code skills 目录
 cp SKILL.md ~/.claude/skills/ppt-builder.md
 ```
 
-**方式二：通过 npx skills**
-```bash
-npx skills add <repo-url> --skill ppt-builder ~/.claude/skills/
+For other AI coding-agent workflows, keep `SKILL.md` available as the instruction file and ask the agent to follow it when building a presentation.
+
+## Example Prompts
+
+```text
+Use the PPT builder skill to turn this training document into a 15-slide presentation.
 ```
 
-## 使用
-
-在 Claude Code 对话中直接说：
-
-- "帮我做一个新品发布会 PPT，基于这个演讲稿"
-- "把这个培训文档做成 15 页的 PPT"
-- "生成一个暗黑科技风的演示文稿"
-
-Skill 会引导你走完 6 步：大纲 → 分镜 → 设计 → 生成 → QA → 交付。
-
-## 依赖
-
-| 工具 | 用途 | 安装 |
-|------|------|------|
-| pptxgenjs | PPTX 生成 | `npm install -g pptxgenjs` |
-| Python 3 + Pillow | 图片预处理 | `pip install Pillow` |
-| markitdown | 文本提取 | `pip install "markitdown[pptx]"` |
-| Gemini API | 视觉 QA（可选） | `pip install google-genai` |
-
-## 项目结构
-
+```text
+Use the PPT builder skill to create a dark, technology-style product launch deck from this outline.
 ```
+
+```text
+Use the PPT builder skill to make an editable PPTX based on this speech script.
+```
+
+## Dependencies
+
+The exact tools depend on the environment and the final deck workflow:
+
+| Tool | Purpose |
+|---|---|
+| `pptxgenjs` | Generate editable PPTX files |
+| Python 3 + Pillow | Preprocess images |
+| `markitdown` | Extract text from source documents |
+| LibreOffice or PowerPoint | Export slides for visual QA |
+| Vision-capable model or manual review | Check slide rendering and layout |
+
+## Typical Project Structure
+
+```text
 your-ppt-project/
-├── material/          # 素材图片（logo、证书、产品图等）
-│   ├── logo.png
-│   └── resized_*.png  # 预处理后的图片（1600px高度）
-├── build_deck_v1.js   # 构建脚本
-├── slide_v1/          # QA 截图
-└── output_v1.pptx     # 最终输出
+  material/          # Source assets such as logos, screenshots, product images
+  build_deck_v1.js   # PPTX generation script
+  slide_v1/          # Rendered slide images for QA
+  output_v1.pptx     # Final editable deck
 ```
 
-## 许可
+## Notes
+
+- This project is a practical workflow skill, not a hosted PPT generation service.
+- Some local paths and optional visual-QA tooling in `SKILL.md` may need adaptation for your environment.
+- The skill is designed for editable output and iterative review, not one-shot image-only slide generation.
+
+## License
 
 MIT
