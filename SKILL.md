@@ -1,16 +1,9 @@
 ---
 name: ppt-builder
-description: 从演讲稿/大纲到PPTX交付的完整工作流。当用户提到"做PPT"、"生成PPT"、"发布会PPT"、"培训PPT"、"汇报PPT"、"帮我做一个演示文稿"，或者提供了演讲稿/文案/大纲并暗示需要演示文稿时，使用此skill。也适用于用户说"基于这个文档做几页slides"、"把这份材料转成PPT"等场景。涵盖6步：提取大纲→分镜脚本→设计系统→pptxgenjs生成→视觉QA→修复交付。
-metadata:
-  type: skill
-  version: 1.2
-  updated: 2026-05-14
-compatibility:
-  required: "pptxgenjs (npm), Python 3 + Pillow, markitdown"
-  optional: "Gemini API (视觉QA), LibreOffice/PowerPoint (导出截图)"
+description: Use when creating an editable PPTX or slide deck from scripts, outlines, documents, training material, product notes, speeches, or rough presentation ideas; especially when the task needs slide planning, visual structure, pptxgenjs generation, image-ratio handling, or rendered-slide QA.
 ---
 
-# PPT Builder — 从演讲稿到PPTX完整交付工作流
+# PPT Builder — 从材料到可编辑 PPTX 的完整交付工作流
 
 ## 触发时机
 
@@ -78,7 +71,7 @@ P02: XXX
 - 明确每页的布局模式（相邻页不能雷同，至少间隔一页再重复）
 - 列出每页需要的素材文件，缺的文件在这一步就指出来
 - 布局描述要具体到"左X右Y"、"上X下Y"、"N×N宫格"
-- 如果用户没有素材，问是否需要AI生成（ComfyUI/Flux）
+- 如果用户没有素材，问是否需要生成、寻找、重绘，或改用纯文字/图形排版。
 
 ### Step 3: 设计系统 → 用户确认
 
@@ -137,7 +130,6 @@ const FONT_H = "Microsoft YaHei", FONT_B = "Microsoft YaHei Light";
 
 // 素材目录
 const MATERIAL = path.join(__dirname, "material");
-const COMFY = "C:/Users/84754/Desktop/claudeproject/ComfyUI/output";
 
 // 自动使用resized_版本（节省PPTX体积）
 function getImg(name) {
@@ -167,7 +159,7 @@ pres.writeFile({ fileName: "output.pptx" });
 
 **运行**:
 ```bash
-export NODE_PATH="C:/Users/84754/AppData/Roaming/npm/node_modules"
+npm install pptxgenjs
 node build_deck_v1.js
 ```
 
@@ -220,10 +212,11 @@ python scripts/office/soffice.py --headless --convert-to pdf output.pptx
 pdftoppm -jpeg -r 150 output.pdf slide
 ```
 
-**5b. Gemini Vision 逐页检查**:
-```bash
-python ~/.claude/tools/gemini_vision.py slide_01.png "检查内容..."
-```
+**5b. 逐页视觉检查**:
+
+使用当前环境可用的视觉能力、截图检查工具，或人工逐页检查。不要依赖某个固定供应商或机器特定脚本路径。
+
+检查时重点看渲染结果，而不是只看代码。
 
 **检查清单**:
 - 元素重叠（文字穿过图形、线条穿过文字）
@@ -259,7 +252,7 @@ python -m markitdown output.pptx | grep -iE "xxxx|lorem|ipsum|placeholder"
 | PPTX体积过大 | 原始图片300dpi | Pillow resize到1600px高度，`resized_`前缀 |
 | 多图片AR不一致对齐差 | 不同来源图片尺寸不一 | 预处理统一resize到相同尺寸 |
 | markitdown中文乱码 | 终端编码问题 | 用python-docx交叉验证 |
-| Gemini需要VPN | Google被墙 | 通知用户手动开VPN，用完提醒关 |
+| 视觉QA工具不可用 | 当前环境没有可用视觉模型或渲染工具 | 改用人工检查截图，或请用户提供渲染截图 |
 | 深色背景文字对比度不足 | 深灰文字(MUTED)在深黑背景上 | 深色主题的MUTED要调亮到#AAAAAA以上 |
 
 ---
@@ -271,4 +264,4 @@ python -m markitdown output.pptx | grep -iE "xxxx|lorem|ipsum|placeholder"
 - 构建脚本命名：`build_deck_v{N}.js`
 - 输出命名：`{项目名}_v{N}.pptx`
 - QA截图放 `slide_v{N}/` 目录
-- 不用的AI生成图放ComfyUI output目录
+- 不用的临时生成图放到项目的临时素材目录，最终交付前清理或归档

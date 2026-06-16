@@ -2,7 +2,7 @@
 
 An AI assistant workflow skill for turning scripts, outlines, training material, or product notes into editable PowerPoint-oriented presentations.
 
-The skill was originally written for Claude Code-style skill workflows, and its process can also be adapted for other coding agents that can follow a `SKILL.md` instruction file.
+The skill is written as a portable `SKILL.md` workflow. It can be used with Codex-style folder skills or adapted for other coding agents that can follow a skill instruction file.
 
 ## What It Does
 
@@ -26,10 +26,11 @@ This confirmation-heavy flow is intentional. Presentation work has many subjecti
 
 ## Install
 
-For Claude Code-style skill usage, copy the skill file into your skills directory:
+For Codex-style folder skills, create a skill folder and copy `SKILL.md` into it:
 
 ```bash
-cp SKILL.md ~/.claude/skills/ppt-builder.md
+mkdir -p ~/.codex/skills/ppt-builder
+cp SKILL.md ~/.codex/skills/ppt-builder/SKILL.md
 ```
 
 For other AI coding-agent workflows, keep `SKILL.md` available as the instruction file and ask the agent to follow it when building a presentation.
@@ -73,7 +74,7 @@ your-ppt-project/
 ## Notes
 
 - This project is a practical workflow skill, not a hosted PPT generation service.
-- Some local paths and optional visual-QA tooling in `SKILL.md` may need adaptation for your environment.
+- Visual QA depends on the tools available in your environment. Use rendered slide screenshots and either a vision-capable model or careful manual review.
 - The skill is designed for editable output and iterative review, not one-shot image-only slide generation.
 
 ## License
